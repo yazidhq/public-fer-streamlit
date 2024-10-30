@@ -3,7 +3,6 @@ import cv2
 from keras.models import model_from_json
 from keras.preprocessing import image
 import streamlit as st
-import time
 
 # Load model architecture from JSON
 with open("Model/Facial_Expression_Recognition.json", "r") as json_file:
@@ -28,7 +27,7 @@ video_capture = cv2.VideoCapture(0)
 # Create a placeholder for the video stream
 frame_placeholder = st.empty()
 
-# Loop to continuously capture frames
+# Streamlit app loop
 while True:
     # Capture frame-by-frame
     ret, img = video_capture.read()
@@ -44,7 +43,7 @@ while True:
     faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
 
     for (x, y, w, h) in faces_detected:
-        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), thickness=1)
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), thickness=2)
         roi_gray = gray_img[y:y + h, x:x + w]
         roi_gray = cv2.resize(roi_gray, (48, 48))
         img_pixels = image.img_to_array(roi_gray)
@@ -60,10 +59,7 @@ while True:
     # Update the image in the Streamlit app
     frame_placeholder.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
 
-    # Add a short delay to simulate real-time capture
-    time.sleep(0.1)
-
-    # Break the loop if a stop button is pressed
+    # Stop button to break the loop
     if st.button('Stop Webcam'):
         break
 
