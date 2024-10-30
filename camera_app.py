@@ -20,18 +20,19 @@ emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 
 # Streamlit app
 st.title("Facial Emotion Recognition")
-st.write("Click the button below to open the camera and detect emotions.")
+st.write("Click the button below to start the webcam and detect emotions.")
 
-# Placeholder for video feed
-video_placeholder = st.empty()
-
-# Button to open the camera
+# Button to start the webcam
 if st.button("Start Webcam"):
+    # Open a connection to the camera
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
         st.error("Could not access the webcam. Please check your camera settings.")
     else:
+        # Create a placeholder for video feed
+        video_placeholder = st.empty()
+
         # Loop to continuously capture frames from the webcam
         while True:
             ret, img = cap.read()
