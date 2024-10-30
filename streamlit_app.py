@@ -3,7 +3,7 @@ import streamlit as st
 
 st.title("Webcam Test")
 
-# Start video capture
+# Start video capture from the webcam
 cap = cv2.VideoCapture(0)
 
 if not cap.isOpened():
