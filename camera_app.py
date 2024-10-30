@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from keras.models import model_from_json
 from keras.preprocessing import image
+import streamlit as st
+import time
 
 # Load model architecture from JSON
 with open("Model/Facial_Expression_Recognition.json", "r") as json_file:
@@ -13,81 +15,57 @@ model.load_weights("Model/fer.weights.h5")
 # Load Haar Cascade for face detection
 face_haar_cascade = cv2.CascadeClassifier('Model/haarcascade_frontalface_default.xml')
 
-# Initialize the webcam
-cap = cv2.VideoCapture(0)
-
-if not cap.isOpened():
-    print("Error: Could not open video.")
-    exit()
-
 # Define emotions
 emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 
-# Create a named window and set its size
-cv2.namedWindow("Facial Emotion Analysis", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Facial Emotion Analysis", 1200, 900)  # Set the desired window size
+# Streamlit app
+st.title("Facial Emotion Recognition")
+st.write("Click the button below to open the camera and detect emotions.")
 
-while True:
-    ret, test_img = cap.read()
-    if not ret:
-        print("Error: Failed to capture frame.")
-        break
+# Placeholder for video feed
+video_placeholder = st.empty()
 
-    # Flip the image to avoid mirroring
-    test_img = cv2.flip(test_img, 1)
+# Button to open the camera
+if st.button("Start Webcam"):
+    cap = cv2.VideoCapture(0)
 
-    gray_img = cv2.cvtColor(test_img, cv2.COLOR_BGR2GRAY)
-    faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
+    if not cap.isOpened():
+        st.error("Could not access the webcam. Please check your camera settings.")
+    else:
+        # Loop to continuously capture frames from the webcam
+        while True:
+            ret, img = cap.read()
+            if not ret:
+                st.error("Failed to capture image.")
+                break
 
-    for (x, y, w, h) in faces_detected:
-        cv2.rectangle(test_img, (x, y), (x + w, y + h), (255, 0, 0), thickness=1)
-        
-        # Region of Interest (ROI) for the detected face
-        roi_gray = gray_img[y:y + h, x:x + w]
-        roi_gray = cv2.resize(roi_gray, (48, 48))  # Resize to 48x48 for model input
-        img_pixels = image.img_to_array(roi_gray)
-        img_pixels = np.expand_dims(img_pixels, axis=0)
-        img_pixels /= 255  # Normalize pixel values
+            # Flip the image to avoid mirroring
+            img = cv2.flip(img, 1)
 
-        # Predict emotion
-        predictions = model.predict(img_pixels)
-        max_index = np.argmax(predictions[0])
-        predicted_emotion = emotions[max_index]
+            # Convert to grayscale for face detection
+            gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
 
-        # Display the predicted emotion
-        cv2.putText(test_img, predicted_emotion, (int(x), int(y - 10)), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
+            for (x, y, w, h) in faces_detected:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), thickness=2)
+                roi_gray = gray_img[y:y + h, x:x + w]
+                roi_gray = cv2.resize(roi_gray, (48, 48))
+                img_pixels = image.img_to_array(roi_gray)
+                img_pixels = np.expand_dims(img_pixels, axis=0)
+                img_pixels /= 255
 
-        # Draw the bar chart
-        bar_width = 10  # Set the bar width smaller
-        spacing = 15    # Increase the spacing between bars
-        for i in range(len(emotions)):
-            # Height of each bar based on prediction
-            bar_height = int(predictions[0][i] * 200)  # Scale to half the height of the previous chart for smaller size
-            # Draw the bar for each emotion
-            cv2.rectangle(test_img, 
-                        (20 + (bar_width + spacing) * i, 350),  # Top-left corner (moved up)
-                        (20 + (bar_width + spacing) * i + bar_width, 350 - bar_height),  # Bottom-right corner (moved up)
-                        (0, 255, 0),  # Color for the bars
-                        -1)  # Fill the rectangle
-            
-            # Display the emotion name vertically (portrait mode) with added margin
-            label_x = 20 + (bar_width + spacing) * i  # X position for the label
-            label_y = 370  # Adjust starting Y position for the label (increased margin)
+                # Predict emotion
+                predictions = model.predict(img_pixels)
+                max_index = np.argmax(predictions[0])
+                predicted_emotion = emotions[max_index]
+                cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-            for j in range(len(emotions[i])):  # Loop through each character in the emotion
-                cv2.putText(test_img, emotions[i][j], 
-                            (label_x, label_y + j * 15),  # Adjust Y position for each character
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, 
-                            (0, 255, 0), 1)  # Color and thickness of the text
+            # Display the image in the Streamlit app
+            video_placeholder.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
 
-    # Display the resulting image with rectangles and predictions
-    cv2.imshow("Facial Emotion Analysis", test_img)  # Use the named window
+            # Delay to slow down the loop slightly
+            time.sleep(0.1)
 
-    # Exit if 'q' is pressed
-    if cv2.waitKey(10) & 0xFF == ord('q'):
-        break
-
-# Release the video capture object and close all OpenCV windows
-cap.release()
-cv2.destroyAllWindows()
+        # Release the video capture object
+        cap.release()
+        cv2.destroyAllWindows()
