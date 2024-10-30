@@ -2,7 +2,7 @@ streamlit==1.39.0
 tensorflow==2.18.0
 keras>=3.5.0
 opencv-python-headless==4.10.0.84
-numpy==1.24.2  # Use a compatible version
+numpy==1.23.5  # Compatible version with TensorFlow
 pillow==10.4.0
 requests==2.32.3
 altair==5.4.1
