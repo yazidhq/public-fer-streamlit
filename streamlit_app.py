@@ -51,5 +51,3 @@ if video_input is not None:
 
     # Display the image in the Streamlit app
     st.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
-else:
-    st.warning("Unable to access the webcam. Please enable your webcam and allow access.")
