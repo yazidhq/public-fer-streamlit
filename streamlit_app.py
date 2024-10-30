@@ -5,6 +5,10 @@ from keras.preprocessing import image
 import streamlit as st
 import time
 
+st.write("Current directory: ", os.getcwd())  # Check current working directory
+st.write("Model path exists: ", os.path.exists("Model/Facial_Expression_Recognition.json"))  # Check if model path is valid
+
+
 # Load model architecture from JSON
 with open("Model/Facial_Expression_Recognition.json", "r") as json_file:
     model = model_from_json(json_file.read())
