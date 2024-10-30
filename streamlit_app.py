@@ -21,12 +21,18 @@ emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 st.title("Facial Emotion Recognition")
 st.write("Use your webcam to detect emotions in real-time.")
 
-# Start video capture from the webcam using Streamlit's webcam component
-video_input = st.camera_input("Capture", key="webcam")
+# Start video capture from the webcam using OpenCV
+video_capture = cv2.VideoCapture(0)
 
-if video_input is not None:
-    # Convert the image to an array
-    img = cv2.imdecode(np.frombuffer(video_input.read(), np.uint8), cv2.IMREAD_COLOR)
+# Streamlit video frame display
+frame_placeholder = st.empty()
+
+while True:
+    # Capture frame-by-frame
+    ret, img = video_capture.read()
+    if not ret:
+        st.warning("Unable to access the webcam.")
+        break
 
     # Flip the image to avoid mirroring
     img = cv2.flip(img, 1)
@@ -50,6 +56,12 @@ if video_input is not None:
         cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
 
     # Display the image in the Streamlit app
-    st.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
-else:
-    st.warning("Please enable your webcam and allow access.")
+    frame_placeholder.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
+
+    # Break the loop if the user wants to stop the webcam
+    if st.button('Stop Webcam'):
+        break
+
+# Release the video capture and close any OpenCV windows
+video_capture.release()
+cv2.destroyAllWindows()
