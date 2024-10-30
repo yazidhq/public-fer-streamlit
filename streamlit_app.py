@@ -3,6 +3,7 @@ import cv2
 from keras.models import model_from_json
 from keras.preprocessing import image
 import streamlit as st
+import time
 
 # Load model architecture from JSON
 with open("Model/Facial_Expression_Recognition.json", "r") as json_file:
@@ -21,12 +22,19 @@ emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 st.title("Facial Emotion Recognition")
 st.write("Use your webcam to detect emotions in real-time.")
 
-# Start video capture from the webcam using Streamlit's camera component
-video_input = st.camera_input("Capture", key="webcam")
+# Start video capture from the webcam
+video_capture = cv2.VideoCapture(0)
 
-if video_input is not None:
-    # Convert the image to an array
-    img = cv2.imdecode(np.frombuffer(video_input.read(), np.uint8), cv2.IMREAD_COLOR)
+# Streamlit placeholder for dynamic image updating
+frame_placeholder = st.empty()
+
+# Run a loop to continuously capture frames
+while True:
+    # Capture frame-by-frame
+    ret, img = video_capture.read()
+    if not ret:
+        st.warning("Unable to access the webcam.")
+        break
 
     # Flip the image to avoid mirroring
     img = cv2.flip(img, 1)
@@ -49,7 +57,16 @@ if video_input is not None:
         predicted_emotion = emotions[max_index]
         cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
 
-    # Display the image in the Streamlit app
-    st.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
-else:
-    st.warning("Please enable your webcam and allow access.")
+    # Update the image in the Streamlit app
+    frame_placeholder.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
+
+    # Sleep briefly to reduce CPU usage
+    time.sleep(0.1)
+
+    # Check for a button to stop the webcam
+    if st.button('Stop Webcam'):
+        break
+
+# Release the video capture when done
+video_capture.release()
+cv2.destroyAllWindows()
