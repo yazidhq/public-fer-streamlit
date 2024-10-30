@@ -19,7 +19,6 @@ emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 
 # Streamlit app
 st.title("Facial Emotion Recognition")
-st.write("Use your webcam to detect emotions in real-time.")
 
 # Start video capture from the webcam using Streamlit's camera component
 video_input = st.camera_input("Capture", key="webcam")
