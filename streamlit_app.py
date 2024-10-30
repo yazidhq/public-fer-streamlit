@@ -25,10 +25,10 @@ st.write("Use your webcam to detect emotions in real-time.")
 # Start video capture from the webcam
 video_capture = cv2.VideoCapture(0)
 
-# Create a placeholder for the video stream
+# Streamlit placeholder for dynamic image updating
 frame_placeholder = st.empty()
 
-# Loop to continuously capture frames
+# Run a loop to continuously capture frames
 while True:
     # Capture frame-by-frame
     ret, img = video_capture.read()
@@ -55,15 +55,15 @@ while True:
         predictions = model.predict(img_pixels)
         max_index = np.argmax(predictions[0])
         predicted_emotion = emotions[max_index]
-        cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
 
     # Update the image in the Streamlit app
     frame_placeholder.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
 
-    # Add a short delay to simulate real-time capture
+    # Sleep briefly to reduce CPU usage
     time.sleep(0.1)
 
-    # Break the loop if a stop button is pressed
+    # Check for a button to stop the webcam
     if st.button('Stop Webcam'):
         break
 
