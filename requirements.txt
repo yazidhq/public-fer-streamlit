@@ -1,8 +1,7 @@
 streamlit==1.39.0
 opencv-python==4.6.0.66
-numpy==1.24.3
-keras==2.13.1
+numpy==1.24.2        
+keras==2.12.0   
 Pillow==10.4.0
-setuptools==66.0.0
 altair==5.2.0
 vega_datasets==0.9.0
