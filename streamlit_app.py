@@ -21,7 +21,7 @@ emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 st.title("Facial Emotion Recognition")
 
 # Start video capture from the webcam using Streamlit's camera component
-video_input = st.camera_input("Capture", key="webcam")
+video_input = st.camera_input("", key="webcam")
 
 if video_input is not None:
     # Convert the image to an array
