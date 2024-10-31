@@ -20,48 +20,33 @@ emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 # Streamlit app
 st.title("Facial Emotion Recognition")
 
-# Initialize session state
-if 'captured_image' not in st.session_state:
-    st.session_state.captured_image = None
+# Start video capture from the webcam using Streamlit's camera component
+video_input = st.camera_input("", key="webcam")
 
-# Display camera input if no image has been captured
-if st.session_state.captured_image is None:
-    # Show the camera input
-    video_input = st.camera_input("Webcam Feed")
+if video_input is not None:
+    # Convert the image to an array
+    img = cv2.imdecode(np.frombuffer(video_input.read(), np.uint8), cv2.IMREAD_COLOR)
 
-    # Process the captured image if available
-    if video_input is not None:
-        # Convert the image to an array
-        img = cv2.imdecode(np.frombuffer(video_input.read(), np.uint8), cv2.IMREAD_COLOR)
+    # Flip the image to avoid mirroring
+    img = cv2.flip(img, 1)
 
-        # Flip the image to avoid mirroring
-        img = cv2.flip(img, 1)
+    # Convert to grayscale for face detection
+    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
 
-        # Convert to grayscale for face detection
-        gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
+    for (x, y, w, h) in faces_detected:
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), thickness=1)
+        roi_gray = gray_img[y:y + h, x:x + w]
+        roi_gray = cv2.resize(roi_gray, (48, 48))
+        img_pixels = image.img_to_array(roi_gray)
+        img_pixels = np.expand_dims(img_pixels, axis=0)
+        img_pixels /= 255
 
-        # Perform emotion recognition on each detected face
-        for (x, y, w, h) in faces_detected:
-            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), thickness=2)
-            roi_gray = gray_img[y:y + h, x:x + w]
-            roi_gray = cv2.resize(roi_gray, (48, 48))
-            img_pixels = image.img_to_array(roi_gray)
-            img_pixels = np.expand_dims(img_pixels, axis=0)
-            img_pixels /= 255.0
+        # Predict emotion
+        predictions = model.predict(img_pixels)
+        max_index = np.argmax(predictions[0])
+        predicted_emotion = emotions[max_index]
+        cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
 
-            # Predict emotion
-            predictions = model.predict(img_pixels)
-            max_index = np.argmax(predictions[0])
-            predicted_emotion = emotions[max_index]
-            cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-        # Save the annotated image to session state
-        st.session_state.captured_image = img
-
-# If an image has been captured, display it in the same position as the camera input with a "Clear Photo" button
-if st.session_state.captured_image is not None:
-    st.image(st.session_state.captured_image, channels="BGR", caption="Captured Emotion Detection", use_column_width=True)
-    if st.button("Clear Photo"):
-        # Clear the captured image to re-enable the camera
-        st.session_state.captured_image = None
+    # Display the image in the Streamlit app
+    st.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
