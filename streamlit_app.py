@@ -22,13 +22,13 @@ st.title("Facial Emotion Recognition")
 
 # Start video capture from the webcam using Streamlit's camera component
 video_input = st.camera_input("", key="webcam")
+# Convert the image to an array
+img = cv2.imdecode(np.frombuffer(video_input.read(), np.uint8), cv2.IMREAD_COLOR)
+
+# Flip the image to avoid mirroring
+img = cv2.flip(img, 1)
 
 if video_input is not None:
-    # Convert the image to an array
-    img = cv2.imdecode(np.frombuffer(video_input.read(), np.uint8), cv2.IMREAD_COLOR)
-
-    # Flip the image to avoid mirroring
-    img = cv2.flip(img, 1)
 
     # Convert to grayscale for face detection
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
