@@ -5,14 +5,31 @@ import streamlit as st
 # Function to detect faces in real-time from webcam
 def detect_faces():
     # Create the Haar cascade classifier for face detection
-    faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "Model/haarcascade_frontalface_default.xml")
+    faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
     # Open the webcam
     cap = cv2.VideoCapture(0)
+    
+    # Create a placeholder for displaying video frames in Streamlit
+    video_placeholder = st.empty()
 
-    while True:
+    if not cap.isOpened():
+        st.error("Could not access the webcam. Please check your camera settings.")
+        return
+
+    # Streamlit session state to control camera
+    if 'run_webcam' not in st.session_state:
+        st.session_state.run_webcam = True
+
+    # Loop to continuously capture frames from the webcam
+    while st.session_state.run_webcam:
         # Capture frame-by-frame
         ret, frame = cap.read()
+
+        # Check if frame is captured correctly
+        if not ret:
+            st.error("Failed to capture image.")
+            break
 
         # Convert the frame to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -24,16 +41,11 @@ def detect_faces():
         for (x, y, w, h) in faces:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-        # Display the resulting frame
-        cv2.imshow('Real-Time Face Detection', frame)
+        # Display the resulting frame in Streamlit
+        video_placeholder.image(frame, channels="BGR", caption="Real-Time Face Detection")
 
-        # Break the loop if 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    # Release the capture and close all OpenCV windows
+    # Release the capture and close all resources
     cap.release()
-    cv2.destroyAllWindows()
 
 # Streamlit UI
 st.title("Real-Time Face Detection")
