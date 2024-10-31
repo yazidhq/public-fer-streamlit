@@ -15,7 +15,7 @@ def detect_faces():
         ret, frame = cap.read()
 
         # Detect faces in the grayscale frame
-        faces = faceCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
+        faces = faceCascade.detectMultiScale(frame, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
 
         # Draw rectangles around the detected faces
         for (x, y, w, h) in faces:
