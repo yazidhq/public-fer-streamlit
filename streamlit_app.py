@@ -11,8 +11,8 @@ with open("Model/Facial_Expression_Recognition.json", "r") as json_file:
 # Load weights from the correct path
 model.load_weights("Model/fer.weights.h5")
 
-# Load DNN model for face detection
-net = cv2.dnn.readNetFromCaffe('deploy.prototxt', 'res10_300x300_ssd_iter_140000.caffemodel')
+# Load Haar Cascade for face detection
+face_haar_cascade = cv2.CascadeClassifier('Model/haarcascade_frontalface_default.xml')
 
 # Define emotions
 emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
@@ -30,30 +30,23 @@ if video_input is not None:
     # Flip the image to avoid mirroring
     img = cv2.flip(img, 1)
 
-    # Prepare image for DNN
-    blob = cv2.dnn.blobFromImage(img, 1.0, (300, 300), (104.0, 177.0, 123.0))
-    net.setInput(blob)
-    detections = net.forward()
+    # Convert to grayscale for face detection
+    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
 
-    h, w = img.shape[:2]
-    for i in range(detections.shape[2]):
-        confidence = detections[0, 0, i, 2]
-        if confidence > 0.5:  # Threshold for detection
-            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-            (x, y, x1, y1) = box.astype("int")
-            cv2.rectangle(img, (x, y), (x1, y1), (255, 0, 0), thickness=1)
+    for (x, y, w, h) in faces_detected:
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), thickness=1)
+        roi_gray = gray_img[y:y + h, x:x + w]
+        roi_gray = cv2.resize(roi_gray, (48, 48))
+        img_pixels = image.img_to_array(roi_gray)
+        img_pixels = np.expand_dims(img_pixels, axis=0)
+        img_pixels /= 255
 
-            roi_gray = cv2.cvtColor(img[y:y1, x:x1], cv2.COLOR_BGR2GRAY)
-            roi_gray = cv2.resize(roi_gray, (48, 48))
-            img_pixels = image.img_to_array(roi_gray)
-            img_pixels = np.expand_dims(img_pixels, axis=0)
-            img_pixels /= 255
-
-            # Predict emotion
-            predictions = model.predict(img_pixels)
-            max_index = np.argmax(predictions[0])
-            predicted_emotion = emotions[max_index]
-            cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
+        # Predict emotion
+        predictions = model.predict(img_pixels)
+        max_index = np.argmax(predictions[0])
+        predicted_emotion = emotions[max_index]
+        cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
 
     # Display the image in the Streamlit app
     st.image(img, channels="BGR", caption="Result", use_column_width=True)
