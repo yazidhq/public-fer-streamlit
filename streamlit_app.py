@@ -5,7 +5,7 @@ import streamlit as st
 # Function to detect faces in real-time from webcam
 def detect_faces():
     # Create the Haar cascade classifier for face detection
-    faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "Model/haarcascade_frontalface_default.xml")
 
     # Open the webcam
     cap = cv2.VideoCapture(0)
