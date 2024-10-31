@@ -20,10 +20,8 @@ st.write("Use your webcam to detect emotions in real-time.")
 # Placeholder for video feed
 video_placeholder = st.empty()
 # Open a connection to the camera
-cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
-    st.error("Could not access the webcam. Please check your camera settings.")
-else:
     if 'run_webcam' not in st.session_state:
         st.session_state.run_webcam = False
     start_button = st.button("Start Webcam", key="start_webcam")
@@ -59,6 +57,9 @@ else:
         video_placeholder.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
         # Delay to slow down the loop slightly
         time.sleep(0.1)
+    else:
+        st.error("Could not access the webcam. Please check your camera settings.")
+    
     # Release the video capture object
-    cap.release()
-    cv2.destroyAllWindows()
+cap.release()
+cv2.destroyAllWindows()
