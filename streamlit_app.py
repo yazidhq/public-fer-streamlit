@@ -21,7 +21,7 @@ emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 st.title("Facial Emotion Recognition")
 
 # Start video capture from the webcam using Streamlit's camera component
-video_input = st.camera_input("", key="webcam")
+video_input = st.camera_input("Webcam Feed", key="webcam")
 
 if video_input is not None:
     # Convert the image to an array
@@ -34,19 +34,20 @@ if video_input is not None:
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
 
+    # Perform emotion recognition on each detected face
     for (x, y, w, h) in faces_detected:
-        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), thickness=1)
+        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), thickness=2)
         roi_gray = gray_img[y:y + h, x:x + w]
         roi_gray = cv2.resize(roi_gray, (48, 48))
         img_pixels = image.img_to_array(roi_gray)
         img_pixels = np.expand_dims(img_pixels, axis=0)
-        img_pixels /= 255
+        img_pixels /= 255.0
 
         # Predict emotion
         predictions = model.predict(img_pixels)
         max_index = np.argmax(predictions[0])
         predicted_emotion = emotions[max_index]
-        cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
+        cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-    # Display the image in the Streamlit app
+    # Display the image with detected faces and emotion labels
     st.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
