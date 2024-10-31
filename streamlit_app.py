@@ -14,9 +14,6 @@ def detect_faces():
         # Capture frame-by-frame
         ret, frame = cap.read()
 
-        # Convert the frame to grayscale
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
         # Detect faces in the grayscale frame
         faces = faceCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
 
