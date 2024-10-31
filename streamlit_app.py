@@ -27,6 +27,9 @@ if video_input is not None:
     # Convert the image to an array
     img = cv2.imdecode(np.frombuffer(video_input.read(), np.uint8), cv2.IMREAD_COLOR)
 
+    # Flip the image if needed (e.g., flip horizontally to correct mirror effect)
+    img = cv2.flip(img, 1)
+
     # Convert to grayscale for face detection
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
@@ -43,7 +46,7 @@ if video_input is not None:
         predictions = model.predict(img_pixels)
         max_index = np.argmax(predictions[0])
         predicted_emotion = emotions[max_index]
-        cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
+        cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
     # Display the image in the Streamlit app
     st.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
