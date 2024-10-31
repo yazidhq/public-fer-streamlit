@@ -1,1 +1,1 @@
-opencv-head
+opencv-python
