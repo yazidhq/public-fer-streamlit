@@ -16,7 +16,6 @@ face_haar_cascade = cv2.CascadeClassifier('Model/haarcascade_frontalface_default
 emotions = ('ANGRY', 'DISGUST', 'FEAR', 'HAPPY', 'SAD', 'SURPRISE', 'NEUTRAL')
 # Streamlit app
 st.title("Facial Emotion Recognition")
-st.write("Use your webcam to detect emotions in real-time.")
 # Placeholder for video feed
 video_placeholder = st.empty()
 # Open a connection to the camera
