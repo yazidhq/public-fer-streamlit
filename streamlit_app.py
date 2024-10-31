@@ -20,7 +20,7 @@ st.write("Use your webcam to detect emotions in real-time.")
 # Placeholder for video feed
 video_placeholder = st.empty()
 # Open a connection to the camera
-cap = cv2.VideoCapture(0, cv2.CAP_OBSENSOR) 
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     st.error("Could not access the webcam. Please check your camera settings.")
 else:
