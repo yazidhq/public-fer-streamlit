@@ -59,7 +59,7 @@ if st.session_state.captured_image is None:
         # Save the annotated image to session state
         st.session_state.captured_image = img
 
-# If an image has been captured, display it with a "Clear Photo" button
+# If an image has been captured, display it in the same position as the camera input with a "Clear Photo" button
 if st.session_state.captured_image is not None:
     st.image(st.session_state.captured_image, channels="BGR", caption="Captured Emotion Detection", use_column_width=True)
     if st.button("Clear Photo"):
