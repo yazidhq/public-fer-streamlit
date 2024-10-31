@@ -27,8 +27,15 @@ if video_input is not None:
     # Convert the image to an array
     img = cv2.imdecode(np.frombuffer(video_input.read(), np.uint8), cv2.IMREAD_COLOR)
 
-    # Flip the image if needed (e.g., flip horizontally to correct mirror effect)
-    img = cv2.flip(img, 1)
+    # Uncomment one of these options to try:
+    # Option 1: No flip
+    # img = img
+
+    # Option 2: Flip horizontally only
+    # img = cv2.flip(img, 1)
+
+    # Option 3: Flip both horizontally and vertically
+    img = cv2.flip(img, -1)
 
     # Convert to grayscale for face detection
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
