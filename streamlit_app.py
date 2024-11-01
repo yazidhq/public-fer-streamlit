@@ -2,12 +2,10 @@ import streamlit as st
 
 st.title("Real-Time Facial Emotion Recognition")
 
-# Display video feed from the Flask server
+# Embed the Flask video stream in Streamlit
 st.markdown(
     """
-    <div style="text-align: center;">
-        <img src="http://127.0.0.1:5000/video_feed" style="width: 80%; border: 1px solid black;">
-    </div>
+    <iframe src="http://localhost:5000/video_feed" width="700" height="500" frameborder="0" allowfullscreen></iframe>
     """,
     unsafe_allow_html=True
 )
