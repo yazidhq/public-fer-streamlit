@@ -1,5 +1,4 @@
-python==3.11
-pip==24.3.1
+python==3.10.15
 opencv-python==4.10.0.84
 opencv-python-headless==4.10.0.84
 keras==3.6.0
