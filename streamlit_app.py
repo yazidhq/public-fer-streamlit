@@ -1,5 +1,4 @@
 import cv2
-import cv
 import numpy as np
 from keras.models import model_from_json
 from keras.preprocessing import image
@@ -20,7 +19,7 @@ st.title("Facial Emotion Recognition")
 # Placeholder for video feed
 video_placeholder = st.empty()
 # Open a connection to the camera
-cap = cv.VideoCapture(0, cv.CAP_OBSENSOR) 
+cap = cv2.VideoCapture(0, cv2.CAP_OBSENSOR) 
 if not cap.isOpened():
     st.error("Could not access the webcam. Please check your camera settings.")
 else:
