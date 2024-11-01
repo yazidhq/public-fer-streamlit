@@ -1,4 +1,5 @@
 import cv2
+import cv
 import numpy as np
 from keras.models import model_from_json
 from keras.preprocessing import image
@@ -19,7 +20,7 @@ st.title("Facial Emotion Recognition")
 # Placeholder for video feed
 video_placeholder = st.empty()
 # Open a connection to the camera
-cap = cv2.VideoCapture(0)
+cap = cv.VideoCapture(0, cv.CAP_OBSENSOR) 
 if not cap.isOpened():
     st.error("Could not access the webcam. Please check your camera settings.")
 else:
@@ -38,8 +39,7 @@ else:
             st.error("Failed to capture image.")
             break
         # Flip the image to avoid mirroring
-        # img = cv2.flip(img, 1)
-        _, img = cv2.VideoCapture(0)
+        img = cv2.flip(img, 1)
         # Convert to grayscale for face detection
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
