@@ -39,7 +39,7 @@ else:
             break
         # Flip the image to avoid mirroring
         # img = cv2.flip(img, 1)
-        _, img = cap.read()
+        _, img = cv2.VideoCapture(0)
         # Convert to grayscale for face detection
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
