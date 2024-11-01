@@ -23,6 +23,7 @@ def generate_frames():
             break
         else:
             # Convert to grayscale for face detection
+            frame = cv2.flip(frame, 1)
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             faces = face_haar_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)
 
