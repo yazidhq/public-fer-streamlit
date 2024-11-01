@@ -21,11 +21,8 @@ st.title("Real-Time Facial Emotion Recognition")
 # Placeholder for video feed
 video_placeholder = st.empty()
 
-# Open a connection to the camera
-cap = cv2.VideoCapture(0)
-
-# Check if the webcam is accessible
-if not cap.isOpened():
+cap = st.camera_input("Camera")
+if cap is not None:
     st.error("Could not access the webcam. Please check your camera settings.")
 else:
     # Manage webcam start/stop functionality with buttons
