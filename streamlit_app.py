@@ -37,8 +37,6 @@ else:
         if not ret:
             st.error("Failed to capture image.")
             break
-        # Flip the image to avoid mirroring
-        img = cv2.flip(img, 1)
         # Convert to grayscale for face detection
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
