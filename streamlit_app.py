@@ -19,9 +19,9 @@ st.title("Facial Emotion Recognition")
 # Placeholder for video feed
 video_placeholder = st.empty()
 # Open a connection to the camera
-cap = cv2.VideoCapture(0) 
+cap = st.camera_input("", key="webcam")
 if not cap.isOpened():
-    st.error("Could not access the webcam.")
+    st.error("Could not access the webcam. Please check your camera settings.")
 else:
     if 'run_webcam' not in st.session_state:
         st.session_state.run_webcam = False
@@ -37,6 +37,8 @@ else:
         if not ret:
             st.error("Failed to capture image.")
             break
+        # Flip the image to avoid mirroring
+        img = cv2.flip(img, 1)
         # Convert to grayscale for face detection
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces_detected = face_haar_cascade.detectMultiScale(gray_img, scaleFactor=1.32, minNeighbors=5)
