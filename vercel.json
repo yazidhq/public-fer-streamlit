@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "build": {
-    "src": "realtime_flask.py",
-    "use": "@vercel/python"
-  },
+  "builds": [
+    {
+      "src": "realtime_flask.py",
+      "use": "@vercel/python"
+    }
+  ],
   "routes": [
     {
       "src": "/(.*)",
