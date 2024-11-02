@@ -49,4 +49,4 @@ if video_input is not None:
         cv2.putText(img, predicted_emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1)
 
     # Display the image in the Streamlit app
-    st.image(img, channels="BGR", caption="Real-time Emotion Detection", use_column_width=True)
+    st.image(img, channels="BGR", caption="Result", use_column_width=True)
